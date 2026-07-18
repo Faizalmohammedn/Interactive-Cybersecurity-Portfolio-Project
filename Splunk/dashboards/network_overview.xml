@@ -1,0 +1,71 @@
+<form version="1.1" theme="dark">
+  <label>SOC Lab - Network Overview</label>
+  <description>Active connections and talkers from Sysmon</description>
+  <fieldset submitButton="false">
+    <input type="time" token="time">
+      <default>
+        <earliest>-6h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Connections Over Time</title>
+      <chart>
+        <search>
+          <query>index=sysmon EventCode=3 | timechart span=5m count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">area</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Possible Port Scans</title>
+      <table>
+        <search>
+          <query>index=sysmon EventCode=3 | bin _time span=2m | stats dc(DestinationPort) as ports by _time, SourceIp | where ports &gt; 50</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Source IPs</title>
+      <chart>
+        <search>
+          <query>index=sysmon EventCode=3 | stats count by SourceIp | sort -count | head 10</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Destination Ports</title>
+      <chart>
+        <search>
+          <query>index=sysmon EventCode=3 | stats count by DestinationPort | sort -count | head 10</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Connection Details</title>
+      <table>
+        <search>
+          <query>index=sysmon EventCode=3 | stats count by SourceIp, DestinationIp, DestinationPort, Image | sort -count | head 100</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+</form>

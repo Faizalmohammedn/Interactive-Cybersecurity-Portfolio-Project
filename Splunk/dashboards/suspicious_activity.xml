@@ -1,0 +1,59 @@
+<form version="1.1" theme="dark">
+  <label>SOC Lab - Suspicious Activity</label>
+  <description>PowerShell, processes, and staging indicators</description>
+  <fieldset submitButton="false">
+    <input type="time" token="time">
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>PowerShell Process Creates</title>
+      <chart>
+        <search>
+          <query>index=sysmon EventCode=1 Image="*powershell*" | timechart span=5m count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Encoded Command Hits</title>
+      <single>
+        <search>
+          <query>index=sysmon EventCode=1 (CommandLine="*EncodedCommand*" OR CommandLine="*-enc*") | stats count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recent Suspicious Processes</title>
+      <table>
+        <search>
+          <query>index=sysmon EventCode=1 (Image="*powershell*" OR Image="*cmd.exe*" OR Image="*mshta.exe*") | table _time, User, Image, ParentImage, CommandLine | sort -_time | head 50</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>File Staging (EID 11)</title>
+      <table>
+        <search>
+          <query>index=sysmon EventCode=11 (TargetFilename="*exfil*" OR TargetFilename="*customer_export*") | table _time, User, Image, TargetFilename</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+</form>
