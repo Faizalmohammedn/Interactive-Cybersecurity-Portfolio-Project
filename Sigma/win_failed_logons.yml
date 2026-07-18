@@ -1,0 +1,22 @@
+title: Windows Multiple Failed Logons
+id: soc-lab-win-failed-logons
+status: experimental
+description: Detects repeated failed interactive/network logons (Event ID 4625).
+author: SOC Analyst Lab
+date: 2026/07/18
+references:
+  - https://attack.mitre.org/techniques/T1110/
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4625
+  timeframe: 5m
+  condition: selection | count() by IpAddress > 10
+falsepositives:
+  - Users mistyping passwords; locked service accounts
+level: medium
+tags:
+  - attack.credential_access
+  - attack.t1110

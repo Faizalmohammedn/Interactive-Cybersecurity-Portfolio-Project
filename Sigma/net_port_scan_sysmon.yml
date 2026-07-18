@@ -1,0 +1,30 @@
+title: Possible Port Scan - Many Unique Destination Ports
+id: soc-lab-port-scan-sysmon
+status: experimental
+description: Detects a source making connections to many unique destination ports in a short window (Nmap-like).
+author: SOC Analyst Lab
+date: 2026/07/18
+references:
+  - https://attack.mitre.org/techniques/T1046/
+logsource:
+  product: windows
+  category: network_connection
+  definition: Sysmon Event ID 3
+detection:
+  selection:
+    EventID: 3
+    Initiated: 'true'
+  timeframe: 2m
+  condition: selection | count(DestinationPort) by SourceIp > 50
+falsepositives:
+  - Vulnerability scanners, software updaters, inventory agents
+level: medium
+tags:
+  - attack.discovery
+  - attack.t1046
+---
+# Splunk SPL equivalent:
+# index=sysmon EventCode=3
+# | bin _time span=2m
+# | stats dc(DestinationPort) as ports by _time, SourceIp
+# | where ports > 50

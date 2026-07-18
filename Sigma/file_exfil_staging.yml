@@ -1,0 +1,27 @@
+title: Sensitive File Staging in Temp or Desktop Exfil Folder
+id: soc-lab-exfil-staging
+status: experimental
+description: Detects creation of lab exfil staging files (customer_export / soc-lab-exfil paths).
+author: SOC Analyst Lab
+date: 2026/07/18
+references:
+  - https://attack.mitre.org/techniques/T1074/
+logsource:
+  product: windows
+  category: file_event
+  definition: Sysmon Event ID 11
+detection:
+  selection:
+    EventID: 11
+    TargetFilename|contains:
+      - 'soc-lab-exfil'
+      - 'customer_export_fake'
+      - 'soc_lab_exfil_stage'
+      - 'staged_customer_export'
+  condition: selection
+falsepositives:
+  - None in this lab naming convention
+level: medium
+tags:
+  - attack.collection
+  - attack.t1074

@@ -1,0 +1,29 @@
+title: SSH Brute Force - Multiple Failures
+id: soc-lab-ssh-bruteforce
+status: experimental
+description: Detects multiple failed SSH authentication attempts from a single source IP.
+author: SOC Analyst Lab
+date: 2026/07/18
+references:
+  - https://attack.mitre.org/techniques/T1110/
+logsource:
+  product: linux
+  service: auth
+detection:
+  selection:
+    message|contains:
+      - 'Failed password'
+      - 'Invalid user'
+  condition: selection | count() by src_ip > 10
+falsepositives:
+  - Misconfigured automation / Ansible with wrong keys
+level: high
+tags:
+  - attack.credential_access
+  - attack.t1110
+---
+# Splunk SPL equivalent (lab):
+# index=linux sourcetype=linux_secure ("Failed password" OR "Invalid user")
+# | rex field=_raw "from (?<src_ip>\d+\.\d+\.\d+\.\d+)"
+# | stats count by src_ip, user
+# | where count > 10
