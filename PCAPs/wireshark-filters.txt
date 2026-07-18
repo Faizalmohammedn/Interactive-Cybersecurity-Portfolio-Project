@@ -1,0 +1,36 @@
+# Wireshark display filters — SOC Analyst Lab
+
+# Scope to lab subnet
+ip.addr == 192.168.56.0/24
+
+# Attacker source
+ip.src == 192.168.56.30
+
+# Victim
+ip.addr == 192.168.56.20
+
+# Target server
+ip.addr == 192.168.56.40
+
+# SSH brute force / sessions
+tcp.port == 22 && ip.addr == 192.168.56.40
+
+# HTTP to target
+http && ip.addr == 192.168.56.40
+
+# DNS
+dns
+
+# SYN scan pattern (SYN set, ACK not set)
+tcp.flags.syn == 1 && tcp.flags.ack == 0 && ip.src == 192.168.56.30
+
+# SMB
+smb || smb2 || tcp.port == 445
+
+# RDP
+tcp.port == 3389
+
+# Exclude ARP noise
+!arp
+
+# Follow interesting streams via right-click → Follow → TCP Stream
