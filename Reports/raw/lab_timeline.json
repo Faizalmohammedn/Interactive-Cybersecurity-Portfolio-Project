@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-07-18T08:32:52.487656+00:00",
+  "timeline": [
+    {
+      "time": "2026-07-18T07:52:52.487656+00:00",
+      "host": "soc-attacker",
+      "action": "Nmap SYN scan against soc-target",
+      "mitre": "T1046",
+      "src": "192.168.56.30",
+      "dst": "192.168.56.40"
+    },
+    {
+      "time": "2026-07-18T08:02:52.487656+00:00",
+      "host": "soc-attacker",
+      "action": "Hydra SSH brute force against targetuser",
+      "mitre": "T1110",
+      "src": "192.168.56.30",
+      "dst": "192.168.56.40"
+    },
+    {
+      "time": "2026-07-18T08:07:52.487656+00:00",
+      "host": "soc-target",
+      "action": "Successful SSH login after failures",
+      "mitre": "T1078",
+      "src": "192.168.56.30",
+      "dst": "192.168.56.40"
+    },
+    {
+      "time": "2026-07-18T08:17:52.487656+00:00",
+      "host": "soc-victim",
+      "action": "Encoded PowerShell execution",
+      "mitre": "T1059.001",
+      "src": "192.168.56.20",
+      "dst": "n/a"
+    },
+    {
+      "time": "2026-07-18T08:27:52.487656+00:00",
+      "host": "soc-victim",
+      "action": "Staged customer_export_fake.csv for exfil sim",
+      "mitre": "T1074",
+      "src": "192.168.56.20",
+      "dst": "192.168.56.30"
+    }
+  ],
+  "iocs": {
+    "ip_addresses": [
+      "192.168.56.30"
+    ],
+    "users": [
+      "targetuser",
+      "labuser"
+    ],
+    "files": [
+      "customer_export_fake.csv",
+      "soc_lab_exfil_stage.txt",
+      "staged_customer_export.csv"
+    ],
+    "commands": [
+      "powershell -EncodedCommand",
+      "hydra -l targetuser -P wordlist-lab.txt ssh://192.168.56.40",
+      "nmap -sS -sV"
+    ]
+  }
+}
