@@ -1,5 +1,6 @@
 # SOC Analyst Training Lab
-
+#<h2 align="center">Contribution Graph <img src="https://github.com/lixdroid-sys/lixdroid-sys/blob/main/images/7.gif" width="35px" height="35px"></h2>
+</p>
 A beginner-friendly, hands-on cybersecurity portfolio project that simulates a real Security Operations Center (SOC). Build a virtual network, simulate attacks safely, collect logs with Splunk, detect threats, and write professional incident reports.
 
 > **Disclaimer:** All attacks are performed inside an isolated VirtualBox lab. Never run these techniques against systems you do not own or have permission to test.
