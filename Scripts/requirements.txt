@@ -1,0 +1,4 @@
+# Optional Python deps for automation helpers
+# stdlib-only scripts work without installs; add tools as needed:
+# sigma-cli>=0.11.0
+# yara-python>=4.3.0
