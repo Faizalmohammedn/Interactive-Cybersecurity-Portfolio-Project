@@ -1,0 +1,60 @@
+# Core Splunk searches for SOC Analyst Lab
+# Save each block as a Report or Alert in Splunk Web.
+
+### Failed Windows Logons
+index=windows EventCode=4625
+| eval src=coalesce(Source_Network_Address, src_ip, IpAddress)
+| stats count as failures by src, Account_Name, Failure_Reason
+| where failures > 5
+| sort -failures
+
+### Successful Network / Remote Logons
+index=windows EventCode=4624 (Logon_Type=3 OR Logon_Type=10)
+| table _time, Account_Name, Source_Network_Address, Logon_Type, Workstation_Name
+| sort -_time
+
+### Linux SSH Failures
+index=linux sourcetype=linux_secure ("Failed password" OR "Invalid user")
+| rex field=_raw "for (invalid user )?(?<user>\S+) from (?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count as failures by src_ip, user
+| where failures > 5
+
+### Linux SSH Success After Failures (simple)
+index=linux sourcetype=linux_secure ("Failed password" OR "Accepted password" OR "Accepted publickey")
+| rex field=_raw "from (?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| rex field=_raw "(?<action>Failed|Accepted)"
+| stats count by src_ip, action
+
+### Encoded PowerShell
+index=sysmon EventCode=1
+(Image="*\\powershell.exe*" OR Image="*\\pwsh.exe*")
+(CommandLine="*EncodedCommand*" OR CommandLine="*-enc*" OR CommandLine="*-e *")
+| table _time, Computer, User, ParentImage, CommandLine
+
+### PowerShell / Script Hosts
+index=sysmon EventCode=1
+(Image="*\\powershell.exe*" OR Image="*\\cmd.exe*" OR Image="*\\wscript.exe*" OR Image="*\\mshta.exe*")
+| stats count by Image, User, ParentImage
+| sort -count
+
+### Network Connections (Sysmon)
+index=sysmon EventCode=3
+| stats count as connections by SourceIp, DestinationIp, DestinationPort, Image
+| sort -connections
+
+### Possible Port Scan
+index=sysmon EventCode=3
+| bin _time span=2m
+| stats dc(DestinationPort) as unique_ports, count as events by _time, SourceIp
+| where unique_ports > 50
+
+### Exfil Staging Files
+index=sysmon EventCode=11
+(TargetFilename="*soc-lab-exfil*" OR TargetFilename="*customer_export*" OR TargetFilename="*exfil_stage*")
+| table _time, Computer, User, Image, TargetFilename
+
+### Top Talkers
+index=sysmon EventCode=3
+| stats count by SourceIp, DestinationIp
+| sort -count
+| head 20
