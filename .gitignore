@@ -1,0 +1,33 @@
+# Ignore large / sensitive artifacts
+*.iso
+*.vdi
+*.vmdk
+*.ova
+*.pcap
+*.pcapng
+!PCAPs/.gitkeep
+!PCAPs/README.md
+
+# Secrets
+.env
+*.pem
+*.key
+credentials.local.*
+passwords.txt
+wordlists/rockyou.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Splunk local secrets
+Splunk/**/passwords.conf
